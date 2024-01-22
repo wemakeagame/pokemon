@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e54dddb9cb9c0984fb39d47eaed4e49e, type: 3}
+  m_Name: Squirtle
+  m_EditorClassIdentifier: 
+  level: 1
+  frontImage: {fileID: -1325106780, guid: dd399eee39fa55649861e0c1659927cf, type: 3}
+  backImage: {fileID: 1587732629, guid: dd399eee39fa55649861e0c1659927cf, type: 3}
+  pokemonName: Squirtle
+  pokemonType: 03000000
+  attacks:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  initialSkills: []
+  totalLife: 30
+  initPower: 10
+  prefab: {fileID: 3187706503995000986, guid: dec7bbc64eca88642aa7fd672f70bc60, type: 3}
