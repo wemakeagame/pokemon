@@ -11,9 +11,13 @@ public class BattlePokemonHUD : MonoBehaviour
     public Slider life;
     public Image lifeBar;
     public Image image;
+    public float blinkRate;
 
-    public float targetLife;
-    public Color targetColor;
+
+    private float targetLife;
+    private Color targetColor;
+    private float currentblinkRate;
+    private bool shouldBlink = false;
 
 
     // Start is called before the first frame update
@@ -25,6 +29,17 @@ public class BattlePokemonHUD : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(shouldBlink)
+        {
+            currentblinkRate += Time.deltaTime;
+
+            if(currentblinkRate > blinkRate)
+            {
+                currentblinkRate = 0;
+                targetColor.a = targetColor.a == 1 ? 0.5f : 1;
+            }
+        }
+
         life.value = Mathf.Lerp(life.value, targetLife, 5f * Time.deltaTime);
         lifeBar.color = Color.Lerp(lifeBar.color, targetColor, 5f * Time.deltaTime);
     }
@@ -48,13 +63,16 @@ public class BattlePokemonHUD : MonoBehaviour
         if(percentLife > 60)
         {
             targetColor = Color.green;
+            targetColor.g = 0.8f;
         } else if(percentLife > 30)
         {
             targetColor = Color.yellow;
-        } else
+        } else 
         {
             targetColor = Color.red;
         }
+
+        shouldBlink = percentLife <= 20;
     }
 
 

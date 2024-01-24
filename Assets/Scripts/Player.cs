@@ -38,7 +38,7 @@ public class Player : MonoBehaviour
 
     void CheckPokemonFound(PokemonArea pokemonArea)
     {
-        if (pokemonArea != null && trainer.GetPokemons().Count > 0)
+        if (pokemonArea != null && trainer.GetPokemons().Count > 0 && trainer.HasPokemonToBattle())
         {
             PokemonData pokemonFound = pokemonArea.FindPokemon();
 

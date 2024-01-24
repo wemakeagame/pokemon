@@ -45,7 +45,14 @@ public class NPCController : MonoBehaviour
             currentPosition = Random.Range(0, positions.Count);
         }
 
-        targetPosition = positions[currentPosition];
+        if(positions.Count > 0)
+        {
+            targetPosition = positions[currentPosition];
+
+        } else
+        {
+            targetPosition = transform.position;
+        }
 
 
         if (transform.position.y < targetPosition.y)

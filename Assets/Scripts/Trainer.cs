@@ -6,7 +6,7 @@ using UnityEngine;
 public class Trainer : MonoBehaviour
 {
     private List<PokemonData> pokemons = new List<PokemonData>();
-    private List<PokemonBase> pokemonsInstantiated = new();
+    private List<PokemonBase> pokemonsInstantiated = new List<PokemonBase>();
 
     // Start is called before the first frame update
     void Start()
@@ -120,5 +120,20 @@ public class Trainer : MonoBehaviour
         }
 
         return skills;
+    }
+
+    public bool HasPokemonToBattle()
+    {
+        bool returnValue = false;
+
+        foreach(PokemonBase pokemon in pokemonsInstantiated)
+        {
+            if(!pokemon.IsDefeated() && !returnValue)
+            {
+                returnValue = true;
+            }
+        }
+
+        return returnValue;
     }
 }

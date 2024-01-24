@@ -77,4 +77,20 @@ public abstract class PokemonBase : MonoBehaviour
     {
         return level * initPower / 2;
     }
+
+    public void Heal(float points)
+    {
+        currentLife += points;
+
+        if(currentLife > totalLife)
+        {
+            currentLife = totalLife;
+        }
+    }
+
+    public void Ressurect()
+    {
+        defeated = false;
+        Heal(totalLife);
+    }
 }

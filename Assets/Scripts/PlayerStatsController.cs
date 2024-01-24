@@ -6,7 +6,8 @@ using UnityEngine;
 public enum EVENTS_KEYS
 {
     NO_EVENT,
-    CHOOSE_FIRST_POKEMON
+    CHOOSE_FIRST_POKEMON,
+    HEAL_ALL_POKEMONS,
 }
 
 public class PlayerStatsController : MonoBehaviour

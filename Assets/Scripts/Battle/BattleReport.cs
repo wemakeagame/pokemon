@@ -8,10 +8,13 @@ public class BattleReport : MonoBehaviour
 {
     public TMP_Text battleReport;
     public float timeChangeTextReport;
+    public float timeUpdateChangeTextReport;
     private float currentTimeCHangeTextReport;
+    private float currentTimeUpdateChangeTextReport;
 
     private string textToReport;
     private int indexTextReport;
+    private List<string> messagesToReport = new List<string>();
 
     // Start is called before the first frame update
     void Start()
@@ -22,6 +25,7 @@ public class BattleReport : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
         if(textToReport != battleReport.text)
         {
             currentTimeCHangeTextReport += Time.deltaTime;
@@ -41,6 +45,22 @@ public class BattleReport : MonoBehaviour
                 }
 
                 indexTextReport++;
+
+            }
+        } else
+        {
+            if(messagesToReport.Count > 0)
+            {
+                currentTimeUpdateChangeTextReport += Time.deltaTime;
+
+                if(currentTimeUpdateChangeTextReport > timeUpdateChangeTextReport)
+                {
+                    currentTimeUpdateChangeTextReport = 0;
+                    textToReport = messagesToReport[0];
+                    messagesToReport.RemoveAt(0);
+                    indexTextReport = 0;
+                }
+              
             }
         }
 
@@ -56,8 +76,14 @@ public class BattleReport : MonoBehaviour
         indexTextReport = 0;
     } 
 
+    public void Report(List<string> texts)
+    {
+        messagesToReport = texts;
+
+    }
+
     public bool IsReportFinished()
     {
-        return textToReport == battleReport.text;
+        return textToReport == battleReport.text && messagesToReport.Count == 0;
     }
 }

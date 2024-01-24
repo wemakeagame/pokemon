@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e54dddb9cb9c0984fb39d47eaed4e49e, type: 3}
   m_Name: Bulbasaur
   m_EditorClassIdentifier: 
-  level: 1
+  level: 5
   frontImage: {fileID: -769698240, guid: dd399eee39fa55649861e0c1659927cf, type: 3}
   backImage: {fileID: -1838104665, guid: dd399eee39fa55649861e0c1659927cf, type: 3}
   pokemonName: Bulbasaur
@@ -24,7 +24,7 @@ MonoBehaviour:
   - {fileID: 0}
   initialSkills:
   - {fileID: 11400000, guid: 24df5a5028f1d69428dc895f573f1d13, type: 2}
-  totalLife: 30
-  initPower: 10
+  totalLife: 60
+  initPower: 20
   speed: 10
   prefab: {fileID: 3187706503995000986, guid: dec7bbc64eca88642aa7fd672f70bc60, type: 3}

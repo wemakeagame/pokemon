@@ -21,6 +21,7 @@ public enum BattaleState
     RESOLVE_ATTACK_PLAYER,
     RESOLVE_ATTACK_OPONENT,
     RUN,
+    ANOUNCE_END_BATTLE,
     END,
 }
 
@@ -115,6 +116,7 @@ public class BattleController : MonoBehaviour
                 break;
             case BattaleState.SELECT_FASTEST_ATTACK:
                 oponentSelectedSkill = opponentTrainer.GetFirstPokemonSkill();
+                attackBattleMenu.gameObject.SetActive(false);
                 float speedPlayer = playerSelectedSkill.attackSpeed + playerPokemon.speed;
                 float speedOponent = oponentSelectedSkill.attackSpeed + oponentPokemon.speed;
 
@@ -151,6 +153,8 @@ public class BattleController : MonoBehaviour
                 WaitTransition();
                 break;
             case BattaleState.END:
+                loadingPanel.Run();
+                gameController.ChangeState(GameState.EXPLORATION);
                 break;
         }
     }
@@ -243,9 +247,19 @@ public class BattleController : MonoBehaviour
             case BattaleState.RUN:
                 if (IsTransitionOver())
                 {
-                    loadingPanel.Run();
                     ChangeState(BattaleState.END);
-                    gameController.ChangeState(GameState.EXPLORATION);
+                    
+                }
+                break;
+            case BattaleState.ANOUNCE_END_BATTLE:
+                if (IsTransitionOver())
+                {
+                    WaitTransition();
+                    if (battleReport.IsReportFinished())
+                    {
+                        WaitTransition();
+                        ChangeState(BattaleState.END);
+                    }
                 }
                 break;
             case BattaleState.END:
@@ -258,13 +272,38 @@ public class BattleController : MonoBehaviour
 
     private void SelectNextRound(BattaleState nextState)
     {
-        if(roundCount == 2)
+        if(oponentPokemon.IsDefeated())
         {
-            ChangeState(BattaleState.CHOOSE_ACTION);
-        } else
+            AnounceEndBattle(playerPokemon, oponentPokemon);
+        } else if(playerPokemon.IsDefeated())
         {
-            ChangeState(nextState);
+            AnounceEndBattle(oponentPokemon, playerPokemon);
         }
+        else
+        {
+            if (roundCount == 2)
+            {
+                ChangeState(BattaleState.CHOOSE_ACTION);
+            }
+            else
+            {
+                ChangeState(nextState);
+            }
+        }
+    }
+
+    private void AnounceEndBattle(PokemonBase winner, PokemonBase loser)
+    {
+        List<string> messages = new List<string>();
+        messages.Add(loser.pokemonName + " was defeated...");
+        if(winner != oponentPokemon)
+        {
+            messages.Add(winner.pokemonName + " received some xp");
+        }
+
+        battleReport.Report(messages);
+        WaitTransition();
+        ChangeState(BattaleState.ANOUNCE_END_BATTLE);
     }
 
     private bool IsTransitionOver()
