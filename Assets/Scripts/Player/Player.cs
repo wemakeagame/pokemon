@@ -61,6 +61,7 @@ public class Player : MonoBehaviour
         }
     }
 
+
     private void OnTriggerEnter2D(Collider2D collider)
     {
        area = collider.GetComponent<PokemonArea>();

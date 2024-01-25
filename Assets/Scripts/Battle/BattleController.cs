@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public enum BattaleState
@@ -21,6 +22,8 @@ public enum BattaleState
     RESOLVE_ATTACK_PLAYER,
     RESOLVE_ATTACK_OPONENT,
     RUN,
+    GET_XP_AFTER_BATTLE,
+    ADD_XP,
     ANOUNCE_END_BATTLE,
     END,
 }
@@ -43,7 +46,7 @@ public class BattleController : MonoBehaviour
     private PokemonBase oponentPokemon;
 
     public BattlePokemonHUD hudOponent;
-    public BattlePokemonHUD hudPlayer;
+    public PlayerBattlePokemonHUD hudPlayer;
 
     private Trainer playerTrainer;
     private Trainer opponentTrainer;
@@ -54,6 +57,7 @@ public class BattleController : MonoBehaviour
     private float playerDamageResult = 0;
     private float oponentDamageResult = 0;
     private int roundCount = 0;
+    private int remainingXpToAdd = 0;
 
     private void Start()
     {
@@ -83,6 +87,7 @@ public class BattleController : MonoBehaviour
                 attackBattleMenu.gameObject.SetActive(false);
                 battleMenu.isBlocked = false;
                 battleMenu.gameObject.SetActive(false);
+                hudPlayer.ShowTrainer();
                 break;
             case BattaleState.START_LOAD:
                 loadingPanel.Run();
@@ -92,11 +97,14 @@ public class BattleController : MonoBehaviour
                 break;
             case BattaleState.FINISH_LOAD:
                 battleScene.SetActive(true);
+                picturePlayer.PlayEnterBattle();
+                pictureOponent.PlayEnterBattle();
                 ChangeState(BattaleState.PRESENT_OPONENT);
                 break;
             case BattaleState.PRESENT_OPONENT:
                 LoadPlayerPokemon();
                 LoadOponentPokemon();
+                pictureOponent.PlayEnterBattle();
                 battleReport.Report("Your battle started against " + opponentTrainer.GetFirstPokemon().pokemonName);
                 WaitTransition();
                 break;
@@ -147,6 +155,9 @@ public class BattleController : MonoBehaviour
             case BattaleState.RESOLVE_ATTACK_OPONENT:
                 WaitTransition();
                 break;
+            case BattaleState.ADD_XP:
+                AddXpPosBattle();
+                break;
             case BattaleState.RUN:
                 battleReport.Report("You Ran away...");
                 battleMenu.isBlocked = true;
@@ -174,9 +185,11 @@ public class BattleController : MonoBehaviour
                 break;
             case BattaleState.PRESENT_OPONENT:
                 if (battleReport.IsReportFinished())
-                {
+                {  
+
                     if (IsTransitionOver())
                     {
+                        picturePlayer.PlayLeaveBattle();
                         ChangeState(BattaleState.PRESENT_PLAYER_POKEMON);
                     }
 
@@ -188,6 +201,7 @@ public class BattleController : MonoBehaviour
                     if (IsTransitionOver())
                     {
                         hudPlayer.SetupImage(playerPokemon, false);
+                        picturePlayer.PlayEnterBattle();
                         ChangeState(BattaleState.CHOOSE_ACTION);
                     }
                 }
@@ -251,6 +265,12 @@ public class BattleController : MonoBehaviour
                     
                 }
                 break;
+            case BattaleState.GET_XP_AFTER_BATTLE:
+                    if (battleReport.IsReportFinished())
+                    {
+                        ChangeState(BattaleState.ADD_XP);
+                    }
+                    break;
             case BattaleState.ANOUNCE_END_BATTLE:
                 if (IsTransitionOver())
                 {
@@ -259,6 +279,23 @@ public class BattleController : MonoBehaviour
                     {
                         WaitTransition();
                         ChangeState(BattaleState.END);
+                    }
+                }
+                break;
+            case BattaleState.ADD_XP:
+                if(battleReport.IsReportFinished())
+                {
+                    if (hudPlayer.IsChangeDone() && remainingXpToAdd > 0)
+                    {
+                        battleReport.Report(playerPokemon.pokemonName + " leveled up...");
+                        AddXpPosBattle();
+                    }
+                    else
+                    {
+                        if(hudPlayer.IsChangeDone())
+                        {
+                            AnounceEndBattle(playerPokemon, oponentPokemon);
+                        }
                     }
                 }
                 break;
@@ -274,7 +311,7 @@ public class BattleController : MonoBehaviour
     {
         if(oponentPokemon.IsDefeated())
         {
-            AnounceEndBattle(playerPokemon, oponentPokemon);
+            GetXpAfterBattle();
         } else if(playerPokemon.IsDefeated())
         {
             AnounceEndBattle(oponentPokemon, playerPokemon);
@@ -296,14 +333,44 @@ public class BattleController : MonoBehaviour
     {
         List<string> messages = new List<string>();
         messages.Add(loser.pokemonName + " was defeated...");
-        if(winner != oponentPokemon)
-        {
-            messages.Add(winner.pokemonName + " received some xp");
-        }
-
         battleReport.Report(messages);
         WaitTransition();
         ChangeState(BattaleState.ANOUNCE_END_BATTLE);
+
+        if(winner == playerPokemon)
+        {
+            pictureOponent.PlayLeaveBattle();
+        } else
+        {
+            picturePlayer.PlayLeaveBattle();
+        }
+    }
+
+    private void GetXpAfterBattle()
+    {
+        int xp = oponentPokemon.GetXpBattle();
+        remainingXpToAdd = xp;
+        battleReport.Report(playerPokemon.pokemonName + " received " + xp + " of experience...");
+        ChangeState(BattaleState.GET_XP_AFTER_BATTLE);
+    }
+
+
+    private void AddXpPosBattle()
+    {
+        int nextXp = playerPokemon.NextLevelXP();
+
+        if(oponentPokemon.GetXpBattle() > nextXp)
+        {
+            remainingXpToAdd -= nextXp;
+            playerPokemon.AddXp(nextXp);
+            hudPlayer.SetupXP(playerPokemon);
+        }
+        else
+        {
+            playerPokemon.AddXp(remainingXpToAdd);
+            hudPlayer.SetupXP(playerPokemon);
+            AnounceEndBattle(playerPokemon, oponentPokemon);
+        }
     }
 
     private bool IsTransitionOver()
@@ -326,6 +393,7 @@ public class BattleController : MonoBehaviour
     {
         playerPokemon = playerTrainer.GetPokemons()[0];
         hudPlayer.SetupPokemon(playerPokemon);
+        hudPlayer.SetupXP(playerPokemon);
     }
 
     public void LoadOponentPokemon()
@@ -355,9 +423,6 @@ public class BattleController : MonoBehaviour
 
     public float ResolveAttackOponent()
     {
-
-       
-
         return ResolveAttack(oponentSelectedSkill, oponentPokemon, playerPokemon);
     }
 

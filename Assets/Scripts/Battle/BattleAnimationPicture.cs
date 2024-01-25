@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BattleAnimationPicture : MonoBehaviour
 {
@@ -9,7 +10,7 @@ public class BattleAnimationPicture : MonoBehaviour
     private Animator animator;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         animator = GetComponent<Animator>();
     }
@@ -29,4 +30,15 @@ public class BattleAnimationPicture : MonoBehaviour
     {
         animator.SetTrigger("trigger_damage");
     }
+
+    public void PlayEnterBattle()
+    {
+        animator.SetTrigger("trigger_enter");
+    }
+
+    public void PlayLeaveBattle()
+    {
+        animator.SetTrigger("trigger_leave");
+    }
+
 }

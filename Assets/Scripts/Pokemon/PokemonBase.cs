@@ -25,6 +25,9 @@ public abstract class PokemonBase : MonoBehaviour
     public List<PokemonSkillBase> skills = new List<PokemonSkillBase>() { null, null, null, null};
     public float totalLife;
     private float currentLife;
+    private int currentXP;
+    private int luck;
+    private int targetXp;
 
     private bool defeated;
 
@@ -32,7 +35,7 @@ public abstract class PokemonBase : MonoBehaviour
     protected virtual void Start()
     {
         currentLife = totalLife;
-        if(pokemonType.Count == 0)
+        if (pokemonType.Count == 0)
         {
             pokemonType.Add(POKEMON_TYPE.NORMAL);
         }
@@ -71,6 +74,9 @@ public abstract class PokemonBase : MonoBehaviour
         pokemonName = pokemonData.pokemonName;
         initPower = pokemonData.initPower;
         speed = pokemonData.speed;
+
+        luck = Random.Range(1, 5);
+        targetXp = GetTargetXP();
     }
 
     public int GetSkillBasePower()
@@ -93,4 +99,44 @@ public abstract class PokemonBase : MonoBehaviour
         defeated = false;
         Heal(totalLife);
     }
+
+    public void AddXp(int xp)
+    {
+        targetXp = GetTargetXP();
+        currentXP += xp;
+
+        if(currentXP >= targetXp)
+        {
+            int diffXp = currentXP - targetXp;
+            currentXP = 0;
+            level++;
+            totalLife += totalLife / (level * luck);
+            speed += speed / (level * luck);
+            initPower += initPower / (level * luck);
+            currentLife = totalLife;
+            AddXp(diffXp);
+        }
+    }
+
+    public int GetXpBattle()
+    {
+        return (int)((level + luck) * Config.xpMultiplier);
+    }
+
+    public int GetTargetXP()
+    {
+        return level * (initPower + speed);
+    }
+
+    public int GetCurrentXP()
+    {
+        return currentXP;
+    }
+
+    public int NextLevelXP()
+    {
+        return targetXp - currentXP;
+    }
+
+     
 }

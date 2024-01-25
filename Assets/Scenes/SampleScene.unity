@@ -2612,7 +2612,7 @@ GameObject:
   - component: {fileID: 438260441}
   - component: {fileID: 438260442}
   m_Layer: 5
-  m_Name: Slider (2)
+  m_Name: xp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10404,6 +10404,7 @@ MonoBehaviour:
   lifeBar: {fileID: 1668476656}
   image: {fileID: 2107744050}
   blinkRate: 0.3
+  trainerSprite: {fileID: 0}
 --- !u!1 &1168798716
 GameObject:
   m_ObjectHideFlags: 0
@@ -10818,7 +10819,7 @@ GameObject:
   - component: {fileID: 1283375686}
   - component: {fileID: 1283375687}
   m_Layer: 5
-  m_Name: Slider (1)
+  m_Name: Life
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11499,7 +11500,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1331352965}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 63c3b675f6bee064fa45793e8548016f, type: 3}
+  m_Script: {fileID: 11500000, guid: a6e07f450f9fc6d42b399a2c8cffbff0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   pokemonName: {fileID: 95747083}
@@ -11508,6 +11509,9 @@ MonoBehaviour:
   lifeBar: {fileID: 1450171872}
   image: {fileID: 1681320889}
   blinkRate: 0.3
+  trainerSprite: {fileID: -87846705, guid: dd399eee39fa55649861e0c1659927cf, type: 3}
+  xp: {fileID: 438260442}
+  speedLevelUp: 100
 --- !u!1 &1412071715
 GameObject:
   m_ObjectHideFlags: 0

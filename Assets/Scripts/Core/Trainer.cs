@@ -100,8 +100,7 @@ public class Trainer : MonoBehaviour
 
             if (skill != null)
             {
-                GameObject newSkillGO = new GameObject();
-                newSkillGO.name = skill.name + " Instance";
+                GameObject newSkillGO = new GameObject(skill.name + " Instance");
                 switch (skill.skillType)
                 {
                     case SkillType.ATTACK:

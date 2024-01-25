@@ -12,12 +12,15 @@ public class BattlePokemonHUD : MonoBehaviour
     public Image lifeBar;
     public Image image;
     public float blinkRate;
+    public Sprite trainerSprite;
 
 
     private float targetLife;
     private Color targetColor;
     private float currentblinkRate;
     private bool shouldBlink = false;
+
+    private PokemonBase pokemon;
 
 
     // Start is called before the first frame update
@@ -27,8 +30,13 @@ public class BattlePokemonHUD : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    protected  virtual void Update()
     {
+        if (!pokemon)
+        {
+            return;
+        }
+
         if(shouldBlink)
         {
             currentblinkRate += Time.deltaTime;
@@ -42,14 +50,15 @@ public class BattlePokemonHUD : MonoBehaviour
 
         life.value = Mathf.Lerp(life.value, targetLife, 5f * Time.deltaTime);
         lifeBar.color = Color.Lerp(lifeBar.color, targetColor, 5f * Time.deltaTime);
+        pokemonName.text = pokemon.pokemonName;
+        level.text = pokemon.level.ToString();
     }
 
     public void SetupPokemon(PokemonBase pokemon )
     {
-        pokemonName.text = pokemon.pokemonName;
-        level.text = pokemon.level.ToString();
+        this.pokemon = pokemon;
         life.value = pokemon.GetCurrentLife();
-        targetLife = life.value;
+        targetLife = pokemon.GetCurrentLife();
         UpdateLife(pokemon);
     }
 
@@ -79,5 +88,10 @@ public class BattlePokemonHUD : MonoBehaviour
     public void SetupImage(PokemonBase pokemon, bool isOpenent = true)
     {
         image.sprite = isOpenent ? pokemon.frontImage : pokemon.backImage;
+    }
+
+    public void ShowTrainer()
+    {
+        image.sprite = trainerSprite;
     }
 }

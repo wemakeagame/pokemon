@@ -146,8 +146,10 @@ public class Human : MonoBehaviour
         if (direction != newDirection)
         {
             ChangeDirection(newDirection);
+            canMove=false;
             return;
         }
+        canMove = true;
 
 
         isMoving = true;
