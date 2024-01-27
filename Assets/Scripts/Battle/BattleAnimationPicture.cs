@@ -8,11 +8,13 @@ public class BattleAnimationPicture : MonoBehaviour
 {
 
     private Animator animator;
+    public Image projectil;
 
     // Start is called before the first frame update
     void Awake()
     {
         animator = GetComponent<Animator>();
+        projectil.enabled = false;
     }
 
     // Update is called once per frame
@@ -24,6 +26,11 @@ public class BattleAnimationPicture : MonoBehaviour
     public void PlaySkill(PokemonSkillBase skill )
     {
         animator.SetTrigger("trigger_" + skill.animationName);
+        if(skill.projectilImage != null)
+        {
+            projectil.enabled = true;
+            projectil.sprite = skill.projectilImage;
+        }
     }
 
     public void PlayDamage()

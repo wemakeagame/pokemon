@@ -22,8 +22,10 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  evolutionTrack: []
   initialSkills:
   - {fileID: 11400000, guid: 24df5a5028f1d69428dc895f573f1d13, type: 2}
+  - {fileID: 11400000, guid: 4f52212c603444e42bbb5edbc468f671, type: 2}
   totalLife: 50
   initPower: 3
   speed: 5

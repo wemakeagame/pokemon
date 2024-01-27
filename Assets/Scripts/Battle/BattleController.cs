@@ -25,6 +25,8 @@ public enum BattaleState
     GET_XP_AFTER_BATTLE,
     ADD_XP,
     ANOUNCE_END_BATTLE,
+    CHECK_EVOLUTION,
+    SHOW_EVOLUTION,
     END,
 }
 
@@ -40,6 +42,7 @@ public class BattleController : MonoBehaviour
     public AttackBattleMenu attackBattleMenu;
     public BattleAnimationPicture pictureOponent;
     public BattleAnimationPicture picturePlayer;
+    public EvolutionReport evolutionReport;
     public BattleReport battleReport;
     public float transitionTime;
     private PokemonBase playerPokemon;
@@ -58,10 +61,13 @@ public class BattleController : MonoBehaviour
     private float oponentDamageResult = 0;
     private int roundCount = 0;
     private int remainingXpToAdd = 0;
+    private List<PokemonBase> pokemonsToCheckEvolution = new List<PokemonBase>();
+    private PokemonBase evolvingPokemon;
 
     private void Start()
     {
         battleScene.SetActive(false);
+        evolutionReport.gameObject.SetActive(false);
         battleMenu.gameObject.SetActive(false);
         attackBattleMenu.gameObject.SetActive(false);
         playerTrainer = FindObjectOfType<PlayerController>().GetComponent<Trainer>();
@@ -88,6 +94,8 @@ public class BattleController : MonoBehaviour
                 battleMenu.isBlocked = false;
                 battleMenu.gameObject.SetActive(false);
                 hudPlayer.ShowTrainer();
+                evolutionReport.gameObject.SetActive(false);
+                pokemonsToCheckEvolution = new List<PokemonBase>();
                 break;
             case BattaleState.START_LOAD:
                 loadingPanel.Run();
@@ -163,8 +171,16 @@ public class BattleController : MonoBehaviour
                 battleMenu.isBlocked = true;
                 WaitTransition();
                 break;
+            case BattaleState.CHECK_EVOLUTION:
+                break;
+            case BattaleState.SHOW_EVOLUTION:
+                evolutionReport.gameObject.SetActive(true);
+                evolutionReport.SetPokemonPicture(pokemonsToCheckEvolution[0].frontImage, pokemonsToCheckEvolution[0].GetNextEvolutionImage());
+                break;
             case BattaleState.END:
                 loadingPanel.Run();
+                Destroy(oponentPokemon.gameObject);
+                Destroy(opponentTrainer.gameObject);
                 gameController.ChangeState(GameState.EXPLORATION);
                 break;
         }
@@ -239,7 +255,7 @@ public class BattleController : MonoBehaviour
                 {
                     if (oponentDamageResult > 0)
                     {
-                        pictureOponent.PlaySkill(playerSelectedSkill);
+                        pictureOponent.PlaySkill(oponentSelectedSkill);
                     }
                     ChangeState(BattaleState.RESOLVE_ATTACK_OPONENT);
                 }
@@ -287,7 +303,13 @@ public class BattleController : MonoBehaviour
                 {
                     if (hudPlayer.IsChangeDone() && remainingXpToAdd > 0)
                     {
-                        battleReport.Report(playerPokemon.pokemonName + " leveled up...");
+                        battleReport.Report(playerPokemon.pokemonName + " leveled up to " + (playerPokemon.level + 1));
+                        hudPlayer.SetupPokemon(playerPokemon);
+                        evolutionReport.StartEvolutionAnimation();
+                        if (!pokemonsToCheckEvolution.Contains(playerPokemon))
+                        {
+                            pokemonsToCheckEvolution.Add(playerPokemon);
+                        }
                         AddXpPosBattle();
                     }
                     else
@@ -297,6 +319,37 @@ public class BattleController : MonoBehaviour
                             AnounceEndBattle(playerPokemon, oponentPokemon);
                         }
                     }
+                }
+                break;
+            case BattaleState.CHECK_EVOLUTION:
+                if(IsTransitionOver())
+                {
+                    if(battleReport.IsReportFinished())
+                    {
+                        if (pokemonsToCheckEvolution.Count > 0 && pokemonsToCheckEvolution[0].CanEvolve())
+                        {
+                            WaitTransition();
+                            ChangeState(BattaleState.SHOW_EVOLUTION);
+                        }
+                        else
+                        {
+                            WaitTransition();
+                            ChangeState(BattaleState.ANOUNCE_END_BATTLE);
+                        }
+                    }
+                }
+                break;
+            case BattaleState.SHOW_EVOLUTION:
+                if(evolutionReport.IsEvolutionOver() && IsTransitionOver())
+                {
+                    string previousName = pokemonsToCheckEvolution[0].pokemonName;
+                    pokemonsToCheckEvolution[0].Evolve();
+
+                    battleReport.Report(previousName + " evolved to " + pokemonsToCheckEvolution[0].pokemonName);
+                    WaitTransition();
+                    pokemonsToCheckEvolution.RemoveAt(0);
+
+                    ChangeState(BattaleState.CHECK_EVOLUTION);
                 }
                 break;
             case BattaleState.END:
@@ -335,9 +388,17 @@ public class BattleController : MonoBehaviour
         messages.Add(loser.pokemonName + " was defeated...");
         battleReport.Report(messages);
         WaitTransition();
-        ChangeState(BattaleState.ANOUNCE_END_BATTLE);
 
-        if(winner == playerPokemon)
+        if(pokemonsToCheckEvolution.Count > 0)
+        {
+            ChangeState(BattaleState.CHECK_EVOLUTION);
+            battleReport.Report("...");
+        } else
+        {
+            ChangeState(BattaleState.ANOUNCE_END_BATTLE);
+        }
+
+        if (winner == playerPokemon)
         {
             pictureOponent.PlayLeaveBattle();
         } else
@@ -405,7 +466,7 @@ public class BattleController : MonoBehaviour
 
     public void SetOpenentPokemon(PokemonData pokemonData)
     {
-        opponentTrainer = new Trainer();
+        opponentTrainer = new GameObject("OponentTrainer").AddComponent<Trainer>();
         opponentTrainer.AddPokemon(pokemonData);
         oponentPokemon = opponentTrainer.GetFirstPokemon();
     }
@@ -434,7 +495,7 @@ public class BattleController : MonoBehaviour
 
             if (didAttackHit)
             {
-                battleReport.Report(pokemon.name + " used: " + skill.attackName);
+                battleReport.Report(pokemon.pokemonName + " used: " + skill.attackName);
                 switch (skill.skillType)
                 {
                     case SkillType.ATTACK:

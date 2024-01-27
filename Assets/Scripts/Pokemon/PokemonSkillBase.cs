@@ -13,6 +13,7 @@ public abstract class PokemonSkillBase : MonoBehaviour
     public int amount;
     public SkillData skillData;
     public string animationName;
+    public Sprite projectilImage;
 
     private int currentAmount;
 
@@ -38,6 +39,7 @@ public abstract class PokemonSkillBase : MonoBehaviour
         skillType = skillData.skillType;
         amount = skillData.amount;
         animationName = skillData.animationName;
+        projectilImage = skillData.projectilImage;
 
         this.skillData = skillData;
     }

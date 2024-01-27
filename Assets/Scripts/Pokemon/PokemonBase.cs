@@ -13,6 +13,13 @@ public enum POKEMON_TYPE
     WATER,
 }
 
+[System.Serializable]
+public class EvolutionTrack
+{
+    public PokemonData evolution;
+    public int levelToEvolve;
+}
+
 public abstract class PokemonBase : MonoBehaviour
 {
     public int level = 1;
@@ -24,6 +31,8 @@ public abstract class PokemonBase : MonoBehaviour
     public List<POKEMON_TYPE> pokemonType = new List<POKEMON_TYPE>();
     public List<PokemonSkillBase> skills = new List<PokemonSkillBase>() { null, null, null, null};
     public float totalLife;
+    public int currentEvolution = 0;
+    public List<EvolutionTrack> evolutionTrack = new List<EvolutionTrack>();
     private float currentLife;
     private int currentXP;
     private int luck;
@@ -63,17 +72,18 @@ public abstract class PokemonBase : MonoBehaviour
         return currentLife;
     }
 
-    public void SetupPokemon(PokemonData pokemonData, List<PokemonSkillBase> skillsToSet)
+    public void SetupPokemon(PokemonData pokemonData)
     {
         totalLife = pokemonData.totalLife;
         level = pokemonData.level;
         frontImage = pokemonData.frontImage;
         backImage = pokemonData?.backImage;
         pokemonType = pokemonData.pokemonType;
-        skills = skillsToSet;
+        skills = InstantiateSkills(pokemonData);
         pokemonName = pokemonData.pokemonName;
         initPower = pokemonData.initPower;
         speed = pokemonData.speed;
+        evolutionTrack = pokemonData.evolutionTrack;
 
         luck = Random.Range(1, 5);
         targetXp = GetTargetXP();
@@ -124,7 +134,7 @@ public abstract class PokemonBase : MonoBehaviour
     }
 
     public int GetTargetXP()
-    {
+    { 
         return level * (initPower + speed);
     }
 
@@ -138,5 +148,79 @@ public abstract class PokemonBase : MonoBehaviour
         return targetXp - currentXP;
     }
 
+    public List<PokemonSkillBase> InstantiateSkills(PokemonData pokemonData)
+    {
+        List<PokemonSkillBase> skills = new List<PokemonSkillBase>();
+
+        // 4  is the limit of attacks
+        for (int i = 0; i < 4; i++)
+        {
+            SkillData skill = null;
+            if (i < pokemonData.initialSkills.Count)
+            {
+                skill = pokemonData.initialSkills[i];
+            }
+
+            if (skill != null && skills.Find(s => s.attackName == skill.attackName) == null)
+            {
+                GameObject newSkillGO = new GameObject(skill.name + " Instance");
+                switch (skill.skillType)
+                {
+                    case SkillType.ATTACK:
+                        newSkillGO.AddComponent<AttackSkill>();
+                        break;
+                }
+
+                newSkillGO.transform.parent = transform;
+
+                PokemonSkillBase newSkill = newSkillGO.GetComponent<PokemonSkillBase>();
+                newSkill.SetSkillData(skill);
+                skills.Add(newSkill);
+            }
+            else
+            {
+                skills.Add(null);
+            }
+        }
+
+        return skills;
+    }
+
+    public void SetUpSkills(PokemonData pokemonData)
+    {
+        List<PokemonSkillBase> skills = InstantiateSkills(pokemonData);
+        foreach (PokemonSkillBase skill in skills)
+        {
+            if (skill != null)
+            {
+                skill.transform.parent = transform;
+            }
+        }
+    }
+
+
+    public bool CanEvolve()
+    {
+        return evolutionTrack.Count > 0 && currentEvolution < evolutionTrack.Count && level >= evolutionTrack[currentEvolution].levelToEvolve;
+    }
+
+
+    public void Evolve()
+    {
+        EvolutionTrack evolution = evolutionTrack[currentEvolution];
+        currentEvolution++;
+        int previousLevel = level;
+        SetupPokemon(evolution.evolution);
+        level = previousLevel;
+    }
+
+    public Sprite GetNextEvolutionImage()
+    {
+        if(CanEvolve())
+        {
+            return evolutionTrack[currentEvolution].evolution.frontImage;
+        }
+        return null;
+    }
      
 }

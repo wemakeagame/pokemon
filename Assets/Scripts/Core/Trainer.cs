@@ -29,17 +29,10 @@ public class Trainer : MonoBehaviour
             GameObject pokemonGO = Instantiate(pokemonData.prefab.gameObject);
             pokemonGO.name = pokemonData.pokemonName;
             PokemonBase pokemon = pokemonGO.GetComponent<PokemonBase>();
+            pokemonGO.transform.parent = transform;
             if (pokemon != null)
             {
-                List<PokemonSkillBase> skills = InstantiateSkills(pokemonData);
-                foreach (PokemonSkillBase skill in skills)
-                {
-                    if(skill != null)
-                    {
-                        skill.transform.parent = pokemon.transform;
-                    }
-                }
-                pokemon.SetupPokemon(pokemonData, skills);
+                pokemon.SetupPokemon(pokemonData);
                 pokemonsInstantiated.Add(pokemon);
 
             }
@@ -81,44 +74,6 @@ public class Trainer : MonoBehaviour
 
         return skill;
 
-    }
-
-    public List<PokemonSkillBase> InstantiateSkills(PokemonData pokemonData)
-    {
-        List<PokemonSkillBase> skills = new List<PokemonSkillBase>();
-
-
-
-        // 4  is the limit of attacks
-        for(int i=0; i<4; i++)
-        {
-            SkillData skill = null;
-            if (i < pokemonData.initialSkills.Count)
-            {
-                skill = pokemonData.initialSkills[i];
-            }
-
-            if (skill != null)
-            {
-                GameObject newSkillGO = new GameObject(skill.name + " Instance");
-                switch (skill.skillType)
-                {
-                    case SkillType.ATTACK:
-                        newSkillGO.AddComponent<AttackSkill>();
-                        break;
-                }
-
-                PokemonSkillBase newSkill = newSkillGO.GetComponent<PokemonSkillBase>();
-                newSkill.SetSkillData(skill);
-                skills.Add(newSkill);
-            }
-            else
-            {
-                skills.Add(null);
-            }
-        }
-
-        return skills;
     }
 
     public bool HasPokemonToBattle()

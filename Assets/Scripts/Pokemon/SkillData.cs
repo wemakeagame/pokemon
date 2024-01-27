@@ -22,5 +22,6 @@ public class SkillData : ScriptableObject
     public SkillType skillType;
     public int amount;
     public string animationName;
+    public Sprite projectilImage;
    
 }

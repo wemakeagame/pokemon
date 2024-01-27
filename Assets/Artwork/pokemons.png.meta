@@ -33,7 +33,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -71,7 +71,7 @@ TextureImporter:
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
-    compressionQuality: 50
+    compressionQuality: 30
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
@@ -339,10 +339,10 @@ TextureImporter:
       name: pokemons_11
       rect:
         serializedVersion: 2
-        x: 629
-        y: 1610
-        width: 27
-        height: 35
+        x: 622
+        y: 1606
+        width: 45
+        height: 45
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -508,9 +508,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 114
-        y: 1506
+        y: 1560
         width: 53
-        height: 87
+        height: 33
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -10268,6 +10268,27 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: pokemons_484
+      rect:
+        serializedVersion: 2
+        x: 113
+        y: 1504
+        width: 55
+        height: 56
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c2a33cb1a3af2f348a8892851933b407
+      internalID: 887742015
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -10412,6 +10433,7 @@ TextureImporter:
       pokemons_240: 1766284129
       pokemons_7: -1325106780
       pokemons_214: -1540948055
+      pokemons_484: 887742015
       pokemons_299: -198489395
       pokemons_22: -1819300073
       pokemons_181: 406659549
