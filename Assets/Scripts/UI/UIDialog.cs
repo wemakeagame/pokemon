@@ -1,35 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class UIDialog : MonoBehaviour
+public class UIDialog : ReportMessageUI
 {
+    public GameObject panel;
 
-    public TMP_Text dialogText;
-    public Image dialogPanel;
-
-    private GameController gameController;
-
-    public string currentText;
-    // Start is called before the first frame update
-    void Start()
+    protected override void Start()
     {
-        gameController = FindObjectOfType<GameController>();
+        base.Start();
+        
     }
 
-    // Update is called once per frame
-    void Update()
+    protected override void Update()
     {
-        if(currentText.Length > 0 && gameController != null && gameController.GetCurrentState() == GameState.DIALOG)
-        {
-            dialogPanel.gameObject.SetActive(true);
-            dialogText.text = currentText;
-        } else
-        {
-            dialogPanel.gameObject.SetActive(false);
-        }
+        base.Update();
+        panel.SetActive(!IsReportFinished());
     }
-
 }

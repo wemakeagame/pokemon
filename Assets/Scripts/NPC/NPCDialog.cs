@@ -9,13 +9,12 @@ using static Unity.VisualScripting.Member;
 public class NPCDialog : MonoBehaviour
 {
 
-    public List<string> dialogsBeforeEvent = new List<string>();
-    public List<string> dialogsAfterEvent = new List<string>();
+    public List<ReportMessage> dialogsBeforeEvent = new List<ReportMessage>();
+    public List<ReportMessage> dialogsAfterEvent = new List<ReportMessage>();
     public EVENTS_KEYS eventName;
     public TriggerEvent afterDialogEvent;
-    private int dialogIndex;
-    private bool dialogInProgress;
-    private UIDialog dialog;
+    private ReportMessageUI dialog;
+    private bool dialogStarted = false;
 
     private NPCController controller;
     private GameController gameController;
@@ -34,12 +33,25 @@ public class NPCDialog : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (dialog.IsReportFinished() && !playerStatsController.IsEventDone(eventName) && dialogStarted)
+        {
+            dialogStarted = false;
+            if(afterDialogEvent != null && !playerStatsController.IsEventDone(eventName))
+            {
+                afterDialogEvent.Trigger();
+
+            }
+            CancelDialog();
+        } else if(dialog.IsReportFinished() && dialogStarted)
+        {
+            dialogStarted = false;
+            gameController.ChangeState(GameState.EXPLORATION);
+        }
     }
 
     public void OnInteract()
     {
-        if(!human.isMoving)
+        if (!human.isMoving)
         {
             Talk();
         }
@@ -53,38 +65,38 @@ public class NPCDialog : MonoBehaviour
 
     void Talk(bool cancel = false)
     {
-        if(cancel)
+        if (cancel)
         {
             CancelDialog();
-        } else
+        }
+        else
         {
-            if (!dialogInProgress)
+            if (dialog.IsReportFinished() && !dialogStarted)
             {
                 StartDialog();
-            } else
-            {
-                ContinueDialog();
             }
 
         }
-        
+
     }
 
     private void StartDialog()
     {
         gameController.ChangeState(GameState.DIALOG);
-        dialogInProgress = true;
-        dialogIndex = 0;
+        dialogStarted = true;
+        List<ReportMessage> dialogs = !playerStatsController.IsEventDone(eventName) ? dialogsBeforeEvent : dialogsAfterEvent;
+        dialog.Report(dialogs);
         PlayerController playerController = FindObjectOfType<PlayerController>();
         if (playerController != null)
         {
             Human playerHuman = playerController.GetComponent<Human>();
-            if(playerHuman != null)
+            if (playerHuman != null)
             {
-                if(playerHuman.direction == Direction.DOWN)
+                if (playerHuman.direction == Direction.DOWN)
                 {
                     human.ChangeDirection(Direction.UP);
-                } else if (playerHuman.direction == Direction.UP)
+                }
+                else if (playerHuman.direction == Direction.UP)
                 {
                     human.ChangeDirection(Direction.DOWN);
                 }
@@ -98,42 +110,12 @@ public class NPCDialog : MonoBehaviour
                 }
             }
         }
-        UpdateCurrentDialog();
-    }
-
-    private void ContinueDialog()
-    {
-        dialogIndex++;
-
-        List<string> dialogs = !playerStatsController.IsEventDone(eventName) ? dialogsBeforeEvent : dialogsAfterEvent;
-
-        if(dialogIndex == dialogs.Count)
-        {
-            CancelDialog();
-
-            if(!playerStatsController.IsEventDone(eventName))
-            {
-                afterDialogEvent.Trigger();
-            }
-        }
-        UpdateCurrentDialog();
     }
 
     private void CancelDialog()
     {
-        dialogIndex = 0;
-        dialogInProgress = false;
-        UpdateCurrentDialog();
-        gameController.ChangeState(GameState.EXPLORATION);
+        dialog.ClearReports();
+        dialogStarted = false;
     }
 
-    private void UpdateCurrentDialog()
-    {
-        List<string> dialogs = !playerStatsController.IsEventDone(eventName) ? dialogsBeforeEvent : dialogsAfterEvent;
-        dialog.currentText = dialogs[dialogIndex];
-        if(!dialogInProgress)
-        {
-            dialog.currentText = "";
-        }
-    }
 }

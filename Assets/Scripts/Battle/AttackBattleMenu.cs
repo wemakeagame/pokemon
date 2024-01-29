@@ -51,7 +51,7 @@ public class AttackBattleMenu : GenericMenu
         {
             if (skills[i] != null)
             {
-                buttons[i].button.GetComponentInChildren<TMP_Text>().text = skills[i].attackName;
+                buttons[i].button.GetComponentInChildren<TMP_Text>().text = skills[i].skillName;
                 buttons[i].isAvailable = true;
             } else
             {

@@ -53,6 +53,7 @@ public class MenuController : MonoBehaviour
                 break;
             case MenuState.POKEMON_FIRST_CHOOSE:
                 firstPokemonMenu.gameObject.SetActive(true);
+                gameController.ChangeState(GameState.MENU);
                 break;
         }
     }

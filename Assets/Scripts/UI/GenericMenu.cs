@@ -26,6 +26,7 @@ public class GenericMenu : MonoBehaviour
 
     protected MenuButton selectedButton;
     public bool isBlocked = false;
+    private float minTimeChangeMenu;
 
     // Start is called before the first frame update
     protected virtual void Start()
@@ -46,18 +47,25 @@ public class GenericMenu : MonoBehaviour
             return;
         }
 
-        int x = (int)Input.GetAxisRaw("Horizontal");
-        int y = (int)Input.GetAxisRaw("Vertical");
+        minTimeChangeMenu += Time.deltaTime;
 
-        if (x != 0)
+        if(minTimeChangeMenu > 0.3f)
         {
-            SelectButton(x > 0 ? Direction.RIGHT : Direction.LEFT);
-        }
+            int x = (int)Input.GetAxisRaw("Horizontal");
+            int y = (int)Input.GetAxisRaw("Vertical");
 
-        if (y != 0)
-        {
-            SelectButton(y < 0 ? Direction.DOWN : Direction.UP);
+            if (x != 0)
+            {
+                SelectButton(x > 0 ? Direction.RIGHT : Direction.LEFT);
+                
+            }
+
+            if (y != 0)
+            {
+                SelectButton(y < 0 ? Direction.DOWN : Direction.UP);
+            }
         }
+        
 
         if (Input.GetKeyDown(KeyCode.Z))
         {
@@ -80,13 +88,14 @@ public class GenericMenu : MonoBehaviour
 
     public void SelectButton(Direction direction)
     {
+        minTimeChangeMenu = 0;
         MenuButtonDirection nextButtonDirection = selectedButton.nextButtons.Find((bt) => bt.direction == direction);
 
-        if (nextButtonDirection != null)
-        {
-            MenuButton nextButton = buttons.Find((bt) => bt.button == nextButtonDirection.menuButton && bt.isAvailable);
+        MenuButton nextButton = buttons.Find((bt) => bt.button == nextButtonDirection.menuButton && bt.isAvailable);
 
-            if(nextButton != null &&  nextButton.isAvailable)
+        if (nextButton != null)
+        {
+            if(nextButton != null)
             {
                 selectedButton.button.enabled = false;
                 nextButtonDirection.menuButton.enabled = true;
@@ -95,13 +104,12 @@ public class GenericMenu : MonoBehaviour
             
         } else
         {
- 
             MenuButton newSelectedButtonAvailable = buttons.Find((bt) => bt.button.name != selectedButton.button.name && bt.isAvailable);
 
             if (newSelectedButtonAvailable != null)
             {
                 selectedButton.button.enabled = false;
-                selectedButton = buttons.Find((bt) => bt.name != selectedButton.button.name && bt.isAvailable);
+                selectedButton = newSelectedButtonAvailable;
                 selectedButton.button.enabled = true;
             }
         }

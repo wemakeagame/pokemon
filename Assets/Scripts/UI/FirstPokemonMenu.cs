@@ -24,6 +24,7 @@ public class FirstPokemonMenu : MonoBehaviour
     private Color defaultColor;
     private float currentTimeSelect;
     private MenuController menuController;
+    private GameController gameController;
 
     private PlayerStatsController playerStatsController;
     private Trainer trainerPlayer;
@@ -36,6 +37,7 @@ public class FirstPokemonMenu : MonoBehaviour
 
         info.text = selectText;
         menuController = FindObjectOfType<MenuController>();
+        gameController = FindObjectOfType<GameController>();
         playerStatsController = FindObjectOfType<PlayerStatsController>();
         trainerPlayer = FindObjectOfType<PlayerController>().GetComponent<Trainer>();
     }
@@ -44,7 +46,6 @@ public class FirstPokemonMenu : MonoBehaviour
     void Update()
     {
         selectedPokemon.color = selectedColor;
-
         currentTimeSelect += Time.deltaTime;
 
         if(currentTimeSelect > 0.1f)
@@ -83,7 +84,6 @@ public class FirstPokemonMenu : MonoBehaviour
                 }
                 menuController.ChangeState(MenuState.NO_MENU);
                 playerStatsController.CompleteEvent(EVENTS_KEYS.CHOOSE_FIRST_POKEMON);
-                Debug.Log("Voce escolheu seu pokemon");
             }
            
         }

@@ -5,6 +5,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEditor.Experimental.GraphView;
 
 public enum BattaleState
 {
@@ -24,6 +25,9 @@ public enum BattaleState
     RUN,
     GET_XP_AFTER_BATTLE,
     ADD_XP,
+    CHECK_NEW_SKILL,
+    CHOOSE_LEARN_SKILL,
+    EVALUATE_END_BATTLE,
     ANOUNCE_END_BATTLE,
     CHECK_EVOLUTION,
     SHOW_EVOLUTION,
@@ -43,7 +47,7 @@ public class BattleController : MonoBehaviour
     public BattleAnimationPicture pictureOponent;
     public BattleAnimationPicture picturePlayer;
     public EvolutionReport evolutionReport;
-    public BattleReport battleReport;
+    public ReportMessageUI battleReport;
     public float transitionTime;
     private PokemonBase playerPokemon;
     private PokemonBase oponentPokemon;
@@ -62,7 +66,9 @@ public class BattleController : MonoBehaviour
     private int roundCount = 0;
     private int remainingXpToAdd = 0;
     private List<PokemonBase> pokemonsToCheckEvolution = new List<PokemonBase>();
+    private List<SkillTrack> skillsToLearn = new List<SkillTrack>();
     private PokemonBase evolvingPokemon;
+    private float advantage;
 
     private void Start()
     {
@@ -72,7 +78,6 @@ public class BattleController : MonoBehaviour
         attackBattleMenu.gameObject.SetActive(false);
         playerTrainer = FindObjectOfType<PlayerController>().GetComponent<Trainer>();
         gameController = FindObjectOfType<GameController>();
-        battleReport.Report("...");
     }
 
     // Update is called once per frame
@@ -84,6 +89,7 @@ public class BattleController : MonoBehaviour
 
     public void ChangeState(BattaleState newState)
     {
+        //Debug.Log("From : " + nextState + " to " + newState);
         nextState = newState;
 
         switch (nextState)
@@ -107,6 +113,7 @@ public class BattleController : MonoBehaviour
                 battleScene.SetActive(true);
                 picturePlayer.PlayEnterBattle();
                 pictureOponent.PlayEnterBattle();
+                battleReport.ClearReports();
                 ChangeState(BattaleState.PRESENT_OPONENT);
                 break;
             case BattaleState.PRESENT_OPONENT:
@@ -139,10 +146,12 @@ public class BattleController : MonoBehaviour
                 if (speedPlayer > speedOponent)
                 {
                     ChangeState(BattaleState.ATTACK_PLAYER);
-                } else if(speedPlayer < speedOponent)
+                }
+                else if (speedPlayer < speedOponent)
                 {
                     ChangeState(BattaleState.ATTACK_OPONENT);
-                } else
+                }
+                else
                 {
                     int rand = Random.Range(0, 100);
 
@@ -167,7 +176,7 @@ public class BattleController : MonoBehaviour
                 AddXpPosBattle();
                 break;
             case BattaleState.RUN:
-                battleReport.Report("You Ran away...");
+                battleReport.Report("You Ran away...", false);
                 battleMenu.isBlocked = true;
                 WaitTransition();
                 break;
@@ -177,11 +186,37 @@ public class BattleController : MonoBehaviour
                 evolutionReport.gameObject.SetActive(true);
                 evolutionReport.SetPokemonPicture(pokemonsToCheckEvolution[0].frontImage, pokemonsToCheckEvolution[0].GetNextEvolutionImage());
                 break;
+            case BattaleState.CHECK_NEW_SKILL:
+                SkillData newSkill = skillsToLearn[0].skill;
+                if (newSkill != null)
+                {
+                    bool canLearnSkill = playerPokemon.skills.Contains(null);
+                    if (canLearnSkill)
+                    {
+                        WaitTransition();
+                        battleReport.Report(playerPokemon.pokemonName + " learned " + newSkill.skillName, false);
+                    }
+                    else
+                    {
+                        battleReport.Report(playerPokemon.pokemonName + "already has 4 skills, do you want to change?");
+                        ChangeState(BattaleState.CHOOSE_LEARN_SKILL);
+                        // TODO: terminar o sistema de trocar skill;
+                    }
+                }
+                else
+                {
+                    ChangeState(BattaleState.EVALUATE_END_BATTLE);
+                }
+                break;
+            case BattaleState.EVALUATE_END_BATTLE:
+                EvaluateEndBattle();
+                break;
             case BattaleState.END:
                 loadingPanel.Run();
+                battleScene.gameObject.SetActive(false);
                 Destroy(oponentPokemon.gameObject);
                 Destroy(opponentTrainer.gameObject);
-                gameController.ChangeState(GameState.EXPLORATION);
+                gameController.ChangeState(GameState.LOADING);
                 break;
         }
     }
@@ -201,7 +236,7 @@ public class BattleController : MonoBehaviour
                 break;
             case BattaleState.PRESENT_OPONENT:
                 if (battleReport.IsReportFinished())
-                {  
+                {
 
                     if (IsTransitionOver())
                     {
@@ -222,22 +257,19 @@ public class BattleController : MonoBehaviour
                     }
                 }
                 break;
-            case BattaleState.CHOOSE_ACTION:
-                break;
-            case BattaleState.CHOOSE_ATTACK:
-                break;
             case BattaleState.ATTACK_PLAYER:
                 if (battleReport.IsReportFinished())
                 {
-                    if(playerDamageResult > 0)
+                    if (playerDamageResult > 0)
                     {
                         picturePlayer.PlaySkill(playerSelectedSkill);
-                       
+                        ReportEffectivity(playerSelectedSkill, advantage);
+
                     }
                     ChangeState(BattaleState.RESOLVE_ATTACK_PLAYER);
                 }
                 break;
-            case  BattaleState.RESOLVE_ATTACK_PLAYER:
+            case BattaleState.RESOLVE_ATTACK_PLAYER:
                 if (IsTransitionOver())
                 {
                     if (playerDamageResult > 0)
@@ -256,6 +288,7 @@ public class BattleController : MonoBehaviour
                     if (oponentDamageResult > 0)
                     {
                         pictureOponent.PlaySkill(oponentSelectedSkill);
+                        ReportEffectivity(oponentSelectedSkill, advantage);
                     }
                     ChangeState(BattaleState.RESOLVE_ATTACK_OPONENT);
                 }
@@ -278,15 +311,15 @@ public class BattleController : MonoBehaviour
                 if (IsTransitionOver())
                 {
                     ChangeState(BattaleState.END);
-                    
+
                 }
                 break;
             case BattaleState.GET_XP_AFTER_BATTLE:
-                    if (battleReport.IsReportFinished())
-                    {
-                        ChangeState(BattaleState.ADD_XP);
-                    }
-                    break;
+                if (battleReport.IsReportFinished())
+                {
+                    ChangeState(BattaleState.ADD_XP);
+                }
+                break;
             case BattaleState.ANOUNCE_END_BATTLE:
                 if (IsTransitionOver())
                 {
@@ -299,13 +332,18 @@ public class BattleController : MonoBehaviour
                 }
                 break;
             case BattaleState.ADD_XP:
-                if(battleReport.IsReportFinished())
+                if (battleReport.IsReportFinished())
                 {
                     if (hudPlayer.IsChangeDone() && remainingXpToAdd > 0)
                     {
-                        battleReport.Report(playerPokemon.pokemonName + " leveled up to " + (playerPokemon.level + 1));
                         hudPlayer.SetupPokemon(playerPokemon);
-                        evolutionReport.StartEvolutionAnimation();
+                        SkillTrack newSkillTrack = playerPokemon.GetNewSkillToLearn();
+
+                        if (newSkillTrack != null && !playerPokemon.HasSkill(newSkillTrack.skill.skillName) && !skillsToLearn.Contains(newSkillTrack))
+                        {
+                            skillsToLearn.Add(newSkillTrack);
+                        }
+
                         if (!pokemonsToCheckEvolution.Contains(playerPokemon))
                         {
                             pokemonsToCheckEvolution.Add(playerPokemon);
@@ -314,33 +352,38 @@ public class BattleController : MonoBehaviour
                     }
                     else
                     {
-                        if(hudPlayer.IsChangeDone())
+                        if (hudPlayer.IsChangeDone())
                         {
-                            AnounceEndBattle(playerPokemon, oponentPokemon);
+                            ChangeState(BattaleState.EVALUATE_END_BATTLE);
                         }
                     }
                 }
                 break;
             case BattaleState.CHECK_EVOLUTION:
-                if(IsTransitionOver())
+                if (IsTransitionOver())
                 {
-                    if(battleReport.IsReportFinished())
+                    if (battleReport.IsReportFinished())
                     {
-                        if (pokemonsToCheckEvolution.Count > 0 && pokemonsToCheckEvolution[0].CanEvolve())
+                        if (pokemonsToCheckEvolution.Count > 0 && !pokemonsToCheckEvolution[0].CanEvolve())
+                        {
+                            pokemonsToCheckEvolution.RemoveAt(0);
+                        }
+                        else if (pokemonsToCheckEvolution.Count > 0 && pokemonsToCheckEvolution[0].CanEvolve())
                         {
                             WaitTransition();
                             ChangeState(BattaleState.SHOW_EVOLUTION);
+                            evolutionReport.StartEvolutionAnimation();
                         }
                         else
                         {
-                            WaitTransition();
-                            ChangeState(BattaleState.ANOUNCE_END_BATTLE);
+                            ChangeState(BattaleState.EVALUATE_END_BATTLE);
                         }
+
                     }
                 }
                 break;
             case BattaleState.SHOW_EVOLUTION:
-                if(evolutionReport.IsEvolutionOver() && IsTransitionOver())
+                if (evolutionReport.IsEvolutionOver() && IsTransitionOver())
                 {
                     string previousName = pokemonsToCheckEvolution[0].pokemonName;
                     pokemonsToCheckEvolution[0].Evolve();
@@ -352,8 +395,17 @@ public class BattleController : MonoBehaviour
                     ChangeState(BattaleState.CHECK_EVOLUTION);
                 }
                 break;
+            case BattaleState.CHECK_NEW_SKILL:
+                if (battleReport.IsReportFinished() && IsTransitionOver())
+                {
+                    playerPokemon.LearnSkill(skillsToLearn[0]);
+                    skillsToLearn.RemoveAt(0);
+                    ChangeState(BattaleState.EVALUATE_END_BATTLE);
+                }
+                break;
             case BattaleState.END:
-                if(IsTransitionOver()) {
+                if (IsTransitionOver())
+                {
                     ChangeState(BattaleState.NO_BATTALE);
                 }
                 break;
@@ -362,12 +414,15 @@ public class BattleController : MonoBehaviour
 
     private void SelectNextRound(BattaleState nextState)
     {
-        if(oponentPokemon.IsDefeated())
+        if (oponentPokemon.IsDefeated())
         {
             GetXpAfterBattle();
-        } else if(playerPokemon.IsDefeated())
+            RemovePokemonAfterBattle();
+        }
+        else if (playerPokemon.IsDefeated())
         {
-            AnounceEndBattle(oponentPokemon, playerPokemon);
+            ChangeState(BattaleState.EVALUATE_END_BATTLE);
+            RemovePokemonAfterBattle();
         }
         else
         {
@@ -382,36 +437,46 @@ public class BattleController : MonoBehaviour
         }
     }
 
-    private void AnounceEndBattle(PokemonBase winner, PokemonBase loser)
+    private void RemovePokemonAfterBattle()
     {
-        List<string> messages = new List<string>();
-        messages.Add(loser.pokemonName + " was defeated...");
-        battleReport.Report(messages);
         WaitTransition();
 
-        if(pokemonsToCheckEvolution.Count > 0)
-        {
-            ChangeState(BattaleState.CHECK_EVOLUTION);
-            battleReport.Report("...");
-        } else
-        {
-            ChangeState(BattaleState.ANOUNCE_END_BATTLE);
-        }
-
-        if (winner == playerPokemon)
+        if (oponentPokemon.IsDefeated())
         {
             pictureOponent.PlayLeaveBattle();
-        } else
+        }
+        else
         {
             picturePlayer.PlayLeaveBattle();
         }
+    }
+
+    private void EvaluateEndBattle()
+    {
+        PokemonBase loser = oponentPokemon.IsDefeated() ? oponentPokemon : playerPokemon;
+        WaitTransition();
+
+        if (skillsToLearn.Count > 0)
+        {
+            ChangeState(BattaleState.CHECK_NEW_SKILL);
+        }
+        else if (pokemonsToCheckEvolution.Count > 0)
+        {
+            ChangeState(BattaleState.CHECK_EVOLUTION);
+        }
+        else
+        {
+            ChangeState(BattaleState.ANOUNCE_END_BATTLE);
+            battleReport.Report(loser.pokemonName + " was defeated...", false);
+        }
+
     }
 
     private void GetXpAfterBattle()
     {
         int xp = oponentPokemon.GetXpBattle();
         remainingXpToAdd = xp;
-        battleReport.Report(playerPokemon.pokemonName + " received " + xp + " of experience...");
+        battleReport.Report(playerPokemon.pokemonName + " received " + xp + " of experience...", false);
         ChangeState(BattaleState.GET_XP_AFTER_BATTLE);
     }
 
@@ -420,17 +485,18 @@ public class BattleController : MonoBehaviour
     {
         int nextXp = playerPokemon.NextLevelXP();
 
-        if(oponentPokemon.GetXpBattle() > nextXp)
+        if (remainingXpToAdd > nextXp)
         {
             remainingXpToAdd -= nextXp;
             playerPokemon.AddXp(nextXp);
             hudPlayer.SetupXP(playerPokemon);
+            battleReport.Report(playerPokemon.pokemonName + " level up to " + (playerPokemon.level), false);
         }
         else
         {
             playerPokemon.AddXp(remainingXpToAdd);
             hudPlayer.SetupXP(playerPokemon);
-            AnounceEndBattle(playerPokemon, oponentPokemon);
+            ChangeState(BattaleState.EVALUATE_END_BATTLE);
         }
     }
 
@@ -495,22 +561,37 @@ public class BattleController : MonoBehaviour
 
             if (didAttackHit)
             {
-                battleReport.Report(pokemon.pokemonName + " used: " + skill.attackName);
+                battleReport.Report(pokemon.pokemonName + " used: " + skill.skillName);
+                advantage = 1;
                 switch (skill.skillType)
                 {
                     case SkillType.ATTACK:
                         int pokemonBasePower = pokemon.GetSkillBasePower();
-                        return (pokemonBasePower + skill.power) * CalculateAdvantageAttack(skill, target);
+                        advantage = CalculateAdvantageAttack(skill, target);
+                        return (pokemonBasePower + skill.power) * advantage;
 
                 }
+
             }
             else
             {
-                battleReport.Report(pokemon.name + " tried : " + skill.attackName + " but missed...");
+                battleReport.Report(pokemon.name + " tried : " + skill.skillName + " but missed...");
             }
         }
 
         return -1;
+    }
+
+    public void ReportEffectivity(PokemonSkillBase skill, float advantage)
+    {
+        if (advantage < 1)
+        {
+            battleReport.Report(skill.skillName + " was not effective...", false);
+        }
+        else if (advantage > 1)
+        {
+            battleReport.Report(skill.skillName + " was super effective...", false);
+        }
     }
 
     public float CalculateAdvantageAttack(PokemonSkillBase skill, PokemonBase target)
@@ -522,12 +603,12 @@ public class BattleController : MonoBehaviour
             case POKEMON_TYPE.NORMAL:
                 return 1;
             case POKEMON_TYPE.FIRE:
-                if(target.pokemonType.Contains(POKEMON_TYPE.FIRE) || target.pokemonType.Contains(POKEMON_TYPE.WATER))
+                if (target.pokemonType.Contains(POKEMON_TYPE.FIRE) || target.pokemonType.Contains(POKEMON_TYPE.WATER))
                 {
                     advantage -= 0.5f;
                 }
 
-                if(target.pokemonType.Contains(POKEMON_TYPE.GRASS))
+                if (target.pokemonType.Contains(POKEMON_TYPE.GRASS))
                 {
                     advantage += 2;
                 }

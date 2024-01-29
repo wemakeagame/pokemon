@@ -15,6 +15,8 @@ public class LoadingPanel : MonoBehaviour
     public Color blackColor;
 
     private bool isLoading;
+    private float defaultTimeToWaitBeforeShow;
+    private bool useDefaultTime = true;
 
     // Start is called before the first frame update
     void Start()
@@ -22,6 +24,7 @@ public class LoadingPanel : MonoBehaviour
         panel = GetComponent<Image>();
         targetColor = panel.color;
         defaultColor = panel.color;
+        defaultTimeToWaitBeforeShow = timeWaitBeforeShow;
     }
 
     // Update is called once per frame
@@ -35,12 +38,14 @@ public class LoadingPanel : MonoBehaviour
         if(panel.color == blackColor)
         {
             currentTimeWaitBeforeShow += Time.deltaTime;
+            float time = useDefaultTime ? defaultTimeToWaitBeforeShow : timeWaitBeforeShow;
 
-            if(currentTimeWaitBeforeShow > timeWaitBeforeShow)
+            if (currentTimeWaitBeforeShow > time)
             {
                 currentTimeWaitBeforeShow = 0;
                 targetColor = defaultColor;
                 isLoading = false;
+                useDefaultTime = true;
             }
         }
     }
@@ -49,6 +54,13 @@ public class LoadingPanel : MonoBehaviour
     {
         targetColor = blackColor;
         isLoading = true;
+    }
+
+    public void Run(float time)
+    {
+        timeWaitBeforeShow = time;
+        useDefaultTime = false;
+        Run();
     }
 
     public bool IsLoading()

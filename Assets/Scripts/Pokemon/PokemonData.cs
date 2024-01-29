@@ -11,9 +11,9 @@ public class PokemonData : ScriptableObject
     public Sprite backImage;
     public string pokemonName;
     public List<POKEMON_TYPE> pokemonType = new List<POKEMON_TYPE>();
-    public List<PokemonSkillBase> attacks = new List<PokemonSkillBase>() { null, null, null, null };
     public List<EvolutionTrack> evolutionTrack = new List<EvolutionTrack>();
     public List<SkillData> initialSkills = new List<SkillData>();
+    public List<SkillTrack> skillsTrack = new List<SkillTrack>();
     public int totalLife;
     public int initPower;
     public int speed;

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public abstract class PokemonSkillBase : MonoBehaviour
 {
-    public string attackName;
+    public string skillName;
     public int power;
     public int chance;
     public float attackSpeed;
@@ -31,7 +31,7 @@ public abstract class PokemonSkillBase : MonoBehaviour
 
     public void SetSkillData(SkillData skillData)
     {
-        attackName = skillData.attackName;
+        skillName = skillData.skillName;
         power = skillData.power;
         chance = skillData.chance;
         attackSpeed = skillData.attackSpeed;

@@ -15,17 +15,20 @@ public enum GameState
 public class GameController : MonoBehaviour
 {
 
-    private GameState state = GameState.EXPLORATION;
-    private GameState nextState = GameState.EXPLORATION;
+    private GameState state = GameState.LOADING;
+    private GameState nextState = GameState.LOADING;
+    private float minLoadingTime = 2;
 
     private BattleController battleController;
     private LoadingPanel loadingPanel;
+    private float currentLoadingTime = 0;
 
     // Start is called before the first frame update
     void Start()
     {
         battleController = FindObjectOfType<BattleController>();
         loadingPanel = battleController.loadingPanel;
+        loadingPanel.Run(minLoadingTime);
     }
 
     // Update is called once per frame
@@ -61,8 +64,10 @@ public class GameController : MonoBehaviour
             case GameState.EXPLORATION:
                 break;
             case GameState.LOADING:
-                if(!loadingPanel.IsLoading())
+                currentLoadingTime += Time.deltaTime;
+                if(!loadingPanel.IsLoading() && currentLoadingTime > minLoadingTime)
                 {
+                    currentLoadingTime = 0;
                     ChangeState(GameState.EXPLORATION);
                 }
                 break;

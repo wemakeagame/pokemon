@@ -14,7 +14,7 @@ public enum SkillType
 public class SkillData : ScriptableObject
 {
     // Start is called before the first frame update
-    public string attackName;
+    public string skillName;
     public int power;
     public int chance;
     public float attackSpeed;
