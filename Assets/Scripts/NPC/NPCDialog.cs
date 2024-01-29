@@ -68,6 +68,7 @@ public class NPCDialog : MonoBehaviour
         if (cancel)
         {
             CancelDialog();
+            gameController.ChangeState(GameState.EXPLORATION);
         }
         else
         {

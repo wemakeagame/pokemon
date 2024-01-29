@@ -282,5 +282,10 @@ public abstract class PokemonBase : MonoBehaviour
     {
         return skills.Find(s => s != null && s.skillName == skillName) != null;
     }
+
+    public void ChangeLuck(int newLuck)
+    {
+        luck = newLuck;
+    }
      
 }

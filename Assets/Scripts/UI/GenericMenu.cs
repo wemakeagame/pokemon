@@ -67,12 +67,12 @@ public class GenericMenu : MonoBehaviour
         }
         
 
-        if (Input.GetKeyDown(KeyCode.Z))
+        if (Input.GetButtonDown("Fire1"))
         {
             PressMenu();
         }
 
-        if (Input.GetKeyDown(KeyCode.X))
+        if (Input.GetButtonDown("Fire2"))
         {
             CancelMenu();
         }

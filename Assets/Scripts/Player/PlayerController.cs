@@ -38,7 +38,7 @@ public class PlayerController : MonoBehaviour
             human.Walk(y > 0 ? Direction.DOWN : Direction.UP);
         }
 
-        if(Input.GetKeyDown(KeyCode.Z))
+        if(Input.GetButtonDown("Fire1"))
         {
             if(!human.isMoving)
             {
@@ -46,7 +46,7 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        if(Input.GetKeyDown(KeyCode.X))
+        if(Input.GetButtonDown("Fire2"))
         {
             ActionExit();
             

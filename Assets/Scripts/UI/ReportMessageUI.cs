@@ -36,7 +36,8 @@ public class ReportMessageUI : MonoBehaviour
     // Start is called before the first frame update
     protected virtual void Start()
     {
-        
+        currentTimeCHangeTextReport = timeChangeTextReport;
+        currentTimeUpdateChangeTextReport = timeUpdateChangeTextReport;
     }
 
     // Update is called once per frame
@@ -81,7 +82,7 @@ public class ReportMessageUI : MonoBehaviour
             }
         }
 
-        if(Input.GetKeyDown(KeyCode.Z))
+        if(Input.GetButtonDown("Fire1"))
         {
             if(reportText.text != textToReport)
             {

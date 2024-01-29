@@ -62,7 +62,7 @@ public class FirstPokemonMenu : MonoBehaviour
             }
         }
 
-        if(Input.GetKeyDown(KeyCode.Z))
+        if(Input.GetButtonDown("Fire1"))
         {
             if(info.text == selectText)
             {
@@ -82,13 +82,17 @@ public class FirstPokemonMenu : MonoBehaviour
                 {
                     trainerPlayer.AddPokemon(thirdPokemonRef);
                 }
+
+                // This makes sure that your first pokemon is the strong you can get
+                trainerPlayer.GetFirstPokemon().ChangeLuck(5);
+
                 menuController.ChangeState(MenuState.NO_MENU);
                 playerStatsController.CompleteEvent(EVENTS_KEYS.CHOOSE_FIRST_POKEMON);
             }
            
         }
 
-        if(Input.GetKeyDown(KeyCode.X))
+        if(Input.GetButtonDown("Fire2"))
         {
             if(info.text == confirmText)
             {
