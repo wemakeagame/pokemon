@@ -35,7 +35,7 @@ public class AttackBattleMenu : GenericMenu
         }
         else if (button.name == "Attack4")
         {
-            battleController.SetPlayerAttack(currentSkills[4]);
+            battleController.SetPlayerAttack(currentSkills[3]);
             battleController.ChangeState(BattaleState.SELECT_FASTEST_ATTACK);
         }
     }

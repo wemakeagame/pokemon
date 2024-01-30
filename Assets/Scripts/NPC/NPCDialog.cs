@@ -48,7 +48,7 @@ public class NPCDialog : Interactible
         }
     }
 
-    public void OnInteract()
+    protected override void OnInteract()
     {
         if (!human.isMoving)
         {
@@ -56,7 +56,7 @@ public class NPCDialog : Interactible
         }
     }
 
-    public void OnStopInteract()
+    protected override void OnStopInteract()
     {
         Talk(true);
     }

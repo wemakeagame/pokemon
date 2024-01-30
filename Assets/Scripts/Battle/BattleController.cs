@@ -78,6 +78,7 @@ public class BattleController : MonoBehaviour
         attackBattleMenu.gameObject.SetActive(false);
         playerTrainer = FindObjectOfType<PlayerController>().GetComponent<Trainer>();
         gameController = FindObjectOfType<GameController>();
+        battleReport.gameObject.SetActive(false);
     }
 
     // Update is called once per frame
@@ -111,6 +112,7 @@ public class BattleController : MonoBehaviour
                 break;
             case BattaleState.FINISH_LOAD:
                 battleScene.SetActive(true);
+                battleReport.gameObject.SetActive(true);
                 picturePlayer.PlayEnterBattle();
                 pictureOponent.PlayEnterBattle();
                 battleReport.ClearReports();

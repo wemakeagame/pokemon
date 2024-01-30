@@ -6,11 +6,21 @@ public class Interactible : MonoBehaviour
 {
     public void Interact()
     {
-        gameObject.SendMessage("OnInteract", SendMessageOptions.DontRequireReceiver);
+       OnInteract();
     }
 
     public void StopInteract()
     {
-        gameObject.SendMessage("OnStopInteract", SendMessageOptions.DontRequireReceiver);
+        StopInteract();
+    }
+
+    protected virtual void OnInteract()
+    {
+
+    }
+
+    protected virtual void OnStopInteract()
+    {
+
     }
 }
