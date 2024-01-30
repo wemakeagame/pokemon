@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e54dddb9cb9c0984fb39d47eaed4e49e, type: 3}
   m_Name: Squirtle
   m_EditorClassIdentifier: 
-  level: 1
+  level: 5
   frontImage: {fileID: -1325106780, guid: dd399eee39fa55649861e0c1659927cf, type: 3}
   backImage: {fileID: 1587732629, guid: dd399eee39fa55649861e0c1659927cf, type: 3}
   pokemonName: Squirtle
@@ -22,7 +22,10 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  initialSkills: []
-  totalLife: 30
-  initPower: 10
+  evolutionTrack: []
+  initialSkills:
+  - {fileID: 11400000, guid: 42ea7fcffedb1d5429ad2839ab6e58a7, type: 2}
+  totalLife: 50
+  initPower: 6
+  speed: 7
   prefab: {fileID: 3187706503995000986, guid: dec7bbc64eca88642aa7fd672f70bc60, type: 3}

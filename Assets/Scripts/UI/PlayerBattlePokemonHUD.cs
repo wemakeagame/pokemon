@@ -16,12 +16,13 @@ public class PlayerBattlePokemonHUD : BattlePokemonHUD
     protected override void Update()
     {
         base.Update();
-        if(xp.value > targetXp)
+        if(xp.value >= targetXp)
         {
             xp.value = targetXp;
         } else
         {
             xp.value += Time.deltaTime * speedLevelUp;
+            xp.value = Mathf.Abs(xp.value);
 
         }
     }

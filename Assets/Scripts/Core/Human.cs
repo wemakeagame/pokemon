@@ -18,7 +18,7 @@ public class HumanSprites
     public void ChangeIndex()
     {
         index++;
-        if(index >= walkingUp.Length)
+        if (index >= walkingUp.Length)
         {
             index = 0;
         }
@@ -70,34 +70,32 @@ public class Human : MonoBehaviour
     void Update()
     {
 
-        if(gameController.GetCurrentState() != GameState.EXPLORATION)
+        if (gameController.GetCurrentState() != GameState.EXPLORATION)
         {
             return;
         }
 
         // movement
-        if(transform.position != newPosition && isMoving)
+        if (transform.position != newPosition && isMoving)
         {
-            
 
             //animation
             currentTransitionTime += Time.deltaTime;
 
-            if(currentTransitionTime > sprites.transitionTime)
+            if (currentTransitionTime > sprites.transitionTime)
             {
                 currentTransitionTime = 0;
                 sprites.ChangeIndex();
                 spriteRenderer.sprite = selectedSprites[sprites.index];
             }
 
-            //transform.position = Vector3.Slerp(transform.position, newPosition, Time.deltaTime * movement.speed);
             switch (direction)
             {
                 case Direction.DOWN:
-                    transform.Translate(Vector3.up * Time.deltaTime * movement.speed);
+                    transform.Translate(Vector3.down * Time.deltaTime * movement.speed);
                     break;
                 case Direction.UP:
-                    transform.Translate(Vector3.down * Time.deltaTime * movement.speed);
+                    transform.Translate(Vector3.up * Time.deltaTime * movement.speed);
                     break;
                 case Direction.LEFT:
                     transform.Translate(Vector3.left * Time.deltaTime * movement.speed);
@@ -115,11 +113,11 @@ public class Human : MonoBehaviour
             }
         }
 
-        
+
         if (!isMoving && selectedSprites != null && selectedSprites.Length > 0)
         {
             currentRestingTime += Time.deltaTime;
-            if(currentRestingTime > movement.restingTime)
+            if (currentRestingTime > movement.restingTime)
             {
                 currentRestingTime = 0;
                 spriteRenderer.sprite = selectedSprites[0];
@@ -127,7 +125,7 @@ public class Human : MonoBehaviour
             }
         }
 
-        if(gameController != null)
+        if (gameController != null)
         {
             GameState state = gameController.GetCurrentState();
             canMove = state == GameState.EXPLORATION;
@@ -137,47 +135,50 @@ public class Human : MonoBehaviour
 
     public void Walk(Direction newDirection)
     {
-        if(isMoving || !canMove)
+        if (isMoving || !canMove)
         {
             return;
         }
-
 
         if (direction != newDirection)
         {
             ChangeDirection(newDirection);
-            canMove=false;
+            currentPosition = transform.position;
             return;
         }
-        canMove = true;
-
 
         isMoving = true;
-        direction = newDirection;
         newPosition = transform.position;
         previousPosition = transform.position;
         SelectSpritesAnimation();
 
 
-        if (direction == Direction.UP){
+        if (direction == Direction.UP)
+        {
+            newPosition.y += Config.WorldUnity;
+            currentPosition.y += Config.WorldUnity;
+        }
+        else if (direction == Direction.DOWN)
+        {
             newPosition.y -= Config.WorldUnity;
             currentPosition.y -= Config.WorldUnity;
         }
-        else if (direction == Direction.DOWN) {
-            newPosition.y += Config.WorldUnity;
-            currentPosition.y += Config.WorldUnity;
-        } else if (direction == Direction.LEFT) {
+        else if (direction == Direction.LEFT)
+        {
             newPosition.x -= Config.WorldUnity;
             currentPosition.x -= Config.WorldUnity;
-        } else if (direction == Direction.RIGHT){
+        }
+        else if (direction == Direction.RIGHT)
+        {
             newPosition.x += Config.WorldUnity;
             currentPosition.x += Config.WorldUnity;
         }
 
-        if(collisionManager.IsPositionAvailable(newPosition))
+        if (collisionManager.IsPositionAvailable(newPosition))
         {
             collisionManager.RegisterPosition(newPosition);
-        } else
+        }
+        else
         {
             newPosition = previousPosition;
             currentPosition = previousPosition;
@@ -187,13 +188,13 @@ public class Human : MonoBehaviour
 
     private void SelectSpritesAnimation()
     {
-        switch(direction)
+        switch (direction)
         {
             case Direction.DOWN:
-                selectedSprites = sprites.walkingUp;
+                selectedSprites = sprites.walkingDown;
                 break;
             case Direction.UP:
-                selectedSprites = sprites.walkingDown;
+                selectedSprites = sprites.walkingUp;
                 break;
             case Direction.LEFT:
                 selectedSprites = sprites.walkingLeft;
@@ -211,7 +212,7 @@ public class Human : MonoBehaviour
         spriteRenderer.sprite = selectedSprites[0];
     }
 
-   
+
 
 
 }

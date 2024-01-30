@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b0aa7cc7f1c60b448befaec9b1c813a, type: 3}
+  m_Name: Scratch
+  m_EditorClassIdentifier: 
+  skillName: Scratch
+  power: 11
+  chance: 90
+  attackSpeed: 4
+  attackType: 0
+  skillType: 0
+  amount: 20
+  animationName: attack_tackle
+  projectilImage: {fileID: 0}

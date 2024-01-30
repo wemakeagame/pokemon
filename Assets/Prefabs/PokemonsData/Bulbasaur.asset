@@ -17,17 +17,16 @@ MonoBehaviour:
   backImage: {fileID: -1838104665, guid: dd399eee39fa55649861e0c1659927cf, type: 3}
   pokemonName: Bulbasaur
   pokemonType: 01000000
-  attacks:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   evolutionTrack:
   - evolution: {fileID: 11400000, guid: 73ce9e8d10e509849a69f7d6b4dfd091, type: 2}
-    levelToEvolve: 6
+    levelToEvolve: 10
   initialSkills:
   - {fileID: 11400000, guid: 24df5a5028f1d69428dc895f573f1d13, type: 2}
+  skillsTrack:
+  - skill: {fileID: 11400000, guid: 377460bf61bbee24bb44bcbed0542259, type: 2}
+    levelToLearn: 8
+    skipped: 0
   totalLife: 60
-  initPower: 20
+  initPower: 5
   speed: 10
   prefab: {fileID: 3187706503995000986, guid: dec7bbc64eca88642aa7fd672f70bc60, type: 3}

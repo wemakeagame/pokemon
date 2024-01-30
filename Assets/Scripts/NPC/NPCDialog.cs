@@ -4,9 +4,8 @@ using UnityEngine;
 using static Unity.VisualScripting.Member;
 
 [RequireComponent(typeof(NPCController))]
-[RequireComponent(typeof(Interactible))]
 [RequireComponent(typeof(Human))]
-public class NPCDialog : MonoBehaviour
+public class NPCDialog : Interactible
 {
 
     public List<ReportMessage> dialogsBeforeEvent = new List<ReportMessage>();
@@ -44,7 +43,7 @@ public class NPCDialog : MonoBehaviour
             CancelDialog();
         } else if(dialog.IsReportFinished() && dialogStarted)
         {
-            dialogStarted = false;
+            dialog.ClearReports();
             gameController.ChangeState(GameState.EXPLORATION);
         }
     }

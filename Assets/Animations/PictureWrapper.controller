@@ -29,8 +29,8 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: oponent_solar_beam
-  m_Speed: 1
+  m_Name: oponent_throw_attack
+  m_Speed: 0.5
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: 8806960848912317986}
@@ -228,7 +228,7 @@ AnimatorController:
     m_DefaultInt: 0
     m_DefaultBool: 0
     m_Controller: {fileID: 0}
-  - m_Name: trigger_solar_beam
+  - m_Name: trigger_throw_attack
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
@@ -272,7 +272,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 0}
+  m_Motion: {fileID: 7400000, guid: 23aa00e44a5d4024c8a5972888e00415, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -314,7 +314,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 1
-    m_ConditionEvent: trigger_solar_beam
+    m_ConditionEvent: trigger_throw_attack
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -8931801913489359099}
@@ -350,7 +350,7 @@ AnimatorStateMachine:
     m_Position: {x: 320, y: 30, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 3966378790086143491}
-    m_Position: {x: 490, y: 130, z: 0}
+    m_Position: {x: 490, y: 200, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 6957056049054746022}
     m_Position: {x: 200, y: 140, z: 0}
@@ -375,7 +375,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: oponent_damage
-  m_Speed: 1
+  m_Speed: 0.5
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: -6255433836343800561}

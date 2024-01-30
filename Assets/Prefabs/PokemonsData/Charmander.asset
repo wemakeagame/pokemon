@@ -12,17 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e54dddb9cb9c0984fb39d47eaed4e49e, type: 3}
   m_Name: Charmander
   m_EditorClassIdentifier: 
-  level: 1
+  level: 5
   frontImage: {fileID: -1676596071, guid: dd399eee39fa55649861e0c1659927cf, type: 3}
   backImage: {fileID: 1522980774, guid: dd399eee39fa55649861e0c1659927cf, type: 3}
   pokemonName: Charmander
-  pokemonType: 01000000
-  attacks:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  initialSkills: []
-  totalLife: 30
-  initPower: 10
+  pokemonType: 02000000
+  evolutionTrack: []
+  initialSkills:
+  - {fileID: 11400000, guid: e1be22a2b76ca654797cf5377e87e768, type: 2}
+  skillsTrack:
+  - skill: {fileID: 11400000, guid: 1aaf67f917490a246ad5fbe1a026dd4b, type: 2}
+    levelToLearn: 6
+    skipped: 0
+  totalLife: 50
+  initPower: 4
+  speed: 8
   prefab: {fileID: 3187706503995000986, guid: dec7bbc64eca88642aa7fd672f70bc60, type: 3}

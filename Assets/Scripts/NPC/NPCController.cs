@@ -57,10 +57,10 @@ public class NPCController : MonoBehaviour
 
         if (transform.position.y < targetPosition.y)
         {
-            human.Walk(Direction.DOWN);
+            human.Walk(Direction.UP);
         } else if (transform.position.y > targetPosition.y)
         {
-            human.Walk(Direction.UP);
+            human.Walk(Direction.DOWN);
         } else if (transform.position.x > targetPosition.x)
         {
             human.Walk(Direction.LEFT);

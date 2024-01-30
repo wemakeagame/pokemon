@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
     private Player player;
 
     private GameController gameController;
+    private float currentTimeToGetDirection;
     // Start is called before the first frame update
     void Start()
     {
@@ -27,16 +28,23 @@ public class PlayerController : MonoBehaviour
 
         int x = (int)Input.GetAxisRaw("Horizontal");
         int y = (int)Input.GetAxisRaw("Vertical");
-
-        if (x != 0 && human.canMove && gameController.GetCurrentState() == GameState.EXPLORATION)
+        currentTimeToGetDirection += Time.deltaTime;
+        if (gameController.GetCurrentState() == GameState.EXPLORATION && currentTimeToGetDirection > 0.1f)
         {
-            human.Walk(x > 0 ? Direction.RIGHT : Direction.LEFT);
+            if (x != 0 && human.canMove)
+            {
+                human.Walk(x > 0 ? Direction.RIGHT : Direction.LEFT);
+                currentTimeToGetDirection = 0;
+            }
+
+            if (y != 0 && human.canMove)
+            {
+                human.Walk(y < 0 ? Direction.DOWN : Direction.UP);
+                currentTimeToGetDirection = 0;
+            }
         }
 
-        if(y != 0 && human.canMove && gameController.GetCurrentState() == GameState.EXPLORATION)
-        {
-            human.Walk(y > 0 ? Direction.DOWN : Direction.UP);
-        }
+        
 
         if(Input.GetButtonDown("Fire1"))
         {

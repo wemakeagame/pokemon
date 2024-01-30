@@ -261,7 +261,6 @@ public abstract class PokemonBase : MonoBehaviour
     public void Evolve()
     {
         EvolutionTrack evolution = evolutionTrack[currentEvolution];
-        currentEvolution++;
         int previousLevel = level;
         int previousLuck = luck;
         SetupPokemon(evolution.evolution);

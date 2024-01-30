@@ -12,21 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e54dddb9cb9c0984fb39d47eaed4e49e, type: 3}
   m_Name: Ivysaur
   m_EditorClassIdentifier: 
-  level: 5
+  level: 10
   frontImage: {fileID: -2040185434, guid: dd399eee39fa55649861e0c1659927cf, type: 3}
   backImage: {fileID: -1994693756, guid: dd399eee39fa55649861e0c1659927cf, type: 3}
   pokemonName: Ivysaur
   pokemonType: 01000000
-  attacks:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  evolutionTrack: []
+  evolutionTrack:
+  - evolution: {fileID: 11400000, guid: f417010d64f05e64680f057436543833, type: 2}
+    levelToEvolve: 30
   initialSkills:
   - {fileID: 11400000, guid: 24df5a5028f1d69428dc895f573f1d13, type: 2}
-  - {fileID: 11400000, guid: 4f52212c603444e42bbb5edbc468f671, type: 2}
+  skillsTrack:
+  - skill: {fileID: 11400000, guid: 4f52212c603444e42bbb5edbc468f671, type: 2}
+    levelToLearn: 12
+    skipped: 0
   totalLife: 60
-  initPower: 20
+  initPower: 10
   speed: 10
   prefab: {fileID: 3187706503995000986, guid: dec7bbc64eca88642aa7fd672f70bc60, type: 3}

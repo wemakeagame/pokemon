@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b0aa7cc7f1c60b448befaec9b1c813a, type: 3}
   m_Name: SolarBeam
   m_EditorClassIdentifier: 
-  attackName: SolarBeam
-  power: 60
+  skillName: Solar beam
+  power: 17
   chance: 85
   attackSpeed: 3
   attackType: 1
   skillType: 0
   amount: 20
-  animationName: solar_beam
+  animationName: throw_attack
   projectilImage: {fileID: 1548029595, guid: dd399eee39fa55649861e0c1659927cf, type: 3}

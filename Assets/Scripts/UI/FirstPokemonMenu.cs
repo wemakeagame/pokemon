@@ -48,33 +48,42 @@ public class FirstPokemonMenu : MonoBehaviour
         selectedPokemon.color = selectedColor;
         currentTimeSelect += Time.deltaTime;
 
-        if(currentTimeSelect > 0.1f)
+        if (info.text != confirmText)
         {
-            if (Input.GetAxisRaw("Horizontal") > 0)
+            if (currentTimeSelect > 0.1f)
             {
-                SelectNext();
-                currentTimeSelect = 0;
-            }
-            else if (Input.GetAxisRaw("Horizontal") < 0)
-            {
-                SelectPrevious();
-                currentTimeSelect = 0;
+                if (Input.GetAxisRaw("Horizontal") > 0)
+                {
+                    SelectNext();
+                    currentTimeSelect = 0;
+                }
+                else if (Input.GetAxisRaw("Horizontal") < 0)
+                {
+                    SelectPrevious();
+                    currentTimeSelect = 0;
+                }
             }
         }
 
-        if(Input.GetButtonDown("Fire1"))
+
+        if (Input.GetButtonDown("Fire1"))
         {
-            if(info.text == selectText)
+            if (info.text == selectText)
             {
                 info.text = confirmText;
-
-            } else
+                firstPokemon.enabled = false;
+                secondPokemon.enabled = false;
+                thirdPokemon.enabled = false;
+                selectedPokemon.enabled = true;
+            }
+            else
             {
                 // fazer a selecao do primeiro pokemom
-                if(selectedPokemon == firstPokemon)
+                if (selectedPokemon == firstPokemon)
                 {
                     trainerPlayer.AddPokemon(firstPokemonRef);
-                } else if (selectedPokemon == secondPokemon)
+                }
+                else if (selectedPokemon == secondPokemon)
                 {
                     trainerPlayer.AddPokemon(secondPokemonRef);
                 }
@@ -89,32 +98,36 @@ public class FirstPokemonMenu : MonoBehaviour
                 menuController.ChangeState(MenuState.NO_MENU);
                 playerStatsController.CompleteEvent(EVENTS_KEYS.CHOOSE_FIRST_POKEMON);
             }
-           
+
         }
 
-        if(Input.GetButtonDown("Fire2"))
+        if (Input.GetButtonDown("Fire2"))
         {
-            if(info.text == confirmText)
+            if (info.text == confirmText)
             {
                 info.text = selectText;
-            } else
+                firstPokemon.enabled = true;
+                secondPokemon.enabled = true;
+                thirdPokemon.enabled = true;
+            }
+            else
             {
                 menuController.ChangeState(MenuState.NO_MENU);
             }
 
         }
-       
+
     }
 
     public void SelectNext()
     {
         Unselect();
 
-        if(selectedPokemon == firstPokemon)
+        if (selectedPokemon == firstPokemon)
         {
             selectedPokemon = secondPokemon;
         }
-        else if(selectedPokemon == secondPokemon)
+        else if (selectedPokemon == secondPokemon)
         {
             selectedPokemon = thirdPokemon;
         }
